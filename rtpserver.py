@@ -103,7 +103,7 @@ class PSMediaFile(MediaFile):
 	pass
 
 
-def SendFile(host,port,fname):
+def SendPSFile(host,port,fname):
 	rc = RtpClient(host,port)
 	mf = PSMediaFile(fname,'\x00\x00\x01\xba')
 	print('type of mf (%s)'%(mf.__class__))
@@ -122,5 +122,5 @@ if  __name__ ==  '__main__' :
 		sys.exit(3)
 	logging.basicConfig(level=logging.INFO,format="%(levelname)-8s [%(filename)-10s:%(funcName)-20s:%(lineno)-5s] %(message)s")
 	print('%s\n'%(repr(sys.argv)))
-	SendFile(sys.argv[1],int(sys.argv[2]),sys.argv[3])
+	SendPSFile(sys.argv[1],int(sys.argv[2]),sys.argv[3])
 		
