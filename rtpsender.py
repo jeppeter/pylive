@@ -7,7 +7,7 @@ import random
 import time
 import logging
 class RtpClient:
-	def __init__(self,host,port,lport=None,pt=0x60,scsr=None):
+	def __init__(self,host,port,lport=None,pt=0x60,scsr=None,step=3600):
 		self.__host= host
 		self.__port=port
 		self.__sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
@@ -20,6 +20,8 @@ class RtpClient:
 		self.__sock.bind(('0.0.0.0',lport))
 		self.__seq = 0
 		self.__pt = pt
+		self.__step = step
+		self.__timestamp = 0
 		return
 
 	def __del__(self):
@@ -36,12 +38,17 @@ class RtpClient:
 			curlen = buflen - slen
 			if curlen > 1400:
 				curlen = 1400
+			eofflag = 0
+			if (curlen + slen) >= buflen:
+				eofflag = 0x80
 			# time stamp is 0
-			smsg = struct.pack('>BBHII',0x80,self.__pt,self.__seq,0,self.__scsr)
+			smsg = struct.pack('>BBHII',0x80,self.__pt | eofflag,self.__seq,self.__timestamp,self.__scsr)
 			smsg += buf[slen:(slen+curlen)]
 			self.__seq += 1
 			self.__sock.sendto(smsg,(self.__host,self.__port))
 			slen += curlen
+		# to modify for the next
+		self.__timestamp += self.__step
 		return
 
 
